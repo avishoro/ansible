@@ -15,4 +15,6 @@ bootcamp-week6
   
   
 3. create two infrastructures, one with the staging code, and one with the production code.
+
+4. follow all the steps in https://gitlab.com/ansible-workshop/labs/lab01 to install ansible and configure the nodes.
  
