@@ -9,7 +9,7 @@ bootcamp-week6
   
   description = "The IP of the master machine."
   
-  default = "<your IP address>"
+  default = "00.000.000.00"
   
   }
   
