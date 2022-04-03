@@ -6,8 +6,11 @@ bootcamp-week6
 2. to your vars.tf file add (besides the 'admin' and 'password' vars) the next code:
  
   variable "masterIP" {
+  
   description = "The IP of the master machine."
+  
   default = "**.***.***.**"
+  
   }
   
   
