@@ -18,3 +18,20 @@ bootcamp-week6
 
 4. follow all the steps in https://gitlab.com/ansible-workshop/labs/lab01 to install ansible and configure the nodes.
  
+5. create vars.yml file with all your variables in this form:
+
+host: <>
+pghost: <>
+pg_username: <>
+pg_password: <>
+LB_ip: <>
+okta_url: https://<>.okta.com
+okta_client_id: <>
+okta_client_secret: <>
+ansible_connection: ssh 
+ansible_port: 22
+ansible_user: <>
+ansible_ssh_pass: <>
+
+6. copy the playbook.yaml to your master
+7. run "ansible-playbook -i inventory playbook.yaml"
