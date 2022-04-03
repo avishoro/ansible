@@ -28,7 +28,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "example" {
 }
 
 resource "azurerm_postgresql_flexible_server" "db" {
-  name                   = "avishai-db"
+  name                   = "db-staging-new"
   resource_group_name    = azurerm_resource_group.weight-tracker-app.name
   location               = azurerm_resource_group.weight-tracker-app.location
   version                = "13"
@@ -55,4 +55,20 @@ resource "azurerm_postgresql_flexible_server_configuration" "example" {
   name      = "backslash_quote"
   server_id = azurerm_postgresql_flexible_server.db.id
   value     = "off"
+}
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "example" {
+  name      = "example-fw"
+  server_id = azurerm_postgresql_flexible_server.PosrgreSQLFlexibleDataServer.id
+
+  start_ip_address = "20.203.191.96"
+  end_ip_address   = "20.203.191.96"
+}
+
+
+resource "azurerm_postgresql_flexible_server_configuration" "flexible_server_configuration" {
+  name      = "require_secure_transport"
+  server_id = azurerm_postgresql_flexible_server.PosrgreSQLFlexibleDataServer.id
+  value     = "off"
+
 }
