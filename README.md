@@ -9,5 +9,7 @@ bootcamp-week6
   description = "The IP of the master machine."
   default = "**.***.***.**"
   }
+  
+  
 3. create two infrastructures, one with the staging code, and one with the production code.
  
