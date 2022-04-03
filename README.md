@@ -46,5 +46,5 @@ ansible_ssh_pass: <>
 
 
 6. copy the playbook.yaml to your master
-7. 
-8. run "ansible-playbook -i inventory playbook.yaml"
+
+7. run "ansible-playbook -i inventory playbook.yaml"
