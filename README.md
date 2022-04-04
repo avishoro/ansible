@@ -44,7 +44,7 @@ ansible_user: <>
 
 ansible_ssh_pass: <>
 
-6. create inventory file with your VM's ip's
+6. create inventory file with your VM's ip's like the inventory-example file
 
 7. copy the playbook.yaml to your master
 
