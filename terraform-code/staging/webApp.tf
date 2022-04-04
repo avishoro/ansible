@@ -72,7 +72,7 @@ resource "azurerm_network_security_group" "webNsg" {
     priority                   = 120
     protocol                   = "Tcp"
     source_port_range          = "*"
-    source_address_prefix      = var.masterIP
+    source_address_prefix      = var.myIP
     destination_port_range     = "22"
     destination_address_prefix = "*"
   }
