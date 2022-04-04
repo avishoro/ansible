@@ -1,0 +1,13 @@
+# the host variable is in the inventory file
+host:
+pghost: 
+pg_username: 
+pg_password:
+LB_ip:
+okta_url: 
+okta_client_id: 
+okta_client_secret: 
+ansible_connection: ssh 
+ansible_port: 22
+ansible_user:  
+ansible_ssh_pass: 
