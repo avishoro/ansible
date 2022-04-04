@@ -56,3 +56,19 @@ resource "azurerm_postgresql_flexible_server_configuration" "example" {
   server_id = azurerm_postgresql_flexible_server.db.id
   value     = "off"
 }
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "example" {
+  name      = "example-fw"
+  server_id = azurerm_postgresql_flexible_server.PosrgreSQLFlexibleDataServer.id
+
+  start_ip_address = "20.203.173.85"
+  end_ip_address   = "20.203.173.85"
+}
+
+
+resource "azurerm_postgresql_flexible_server_configuration" "flexible_server_configuration" {
+  name      = "require_secure_transport"
+  server_id = azurerm_postgresql_flexible_server.PosrgreSQLFlexibleDataServer.id
+  value     = "off"
+
+}
