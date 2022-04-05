@@ -7,16 +7,18 @@ resource "azurerm_subnet" "public" {
 
 
 
-resource "azurerm_lb_probe" "example" {
+resource "azurerm_lb_probe" "http" {
   name                = "http-running-probe"
-  loadbalancer_id     = azurerm_lb.example.id
+  loadbalancer_id     = azurerm_lb.load-balancer.id
   port                = 8080
 }
 resource "azurerm_lb_probe" "ssh" {
   name                = "http-ssh-probe"
-  loadbalancer_id     = azurerm_lb.example.id
+  loadbalancer_id     = azurerm_lb.load-balancer.id
   port                = 22
 }
+
+# Azure Public Ip for Load Balancer
 
 resource "azurerm_public_ip" "ip" {
   name                = "${var.projectPrefix}-ip"
@@ -80,14 +82,14 @@ resource "azurerm_network_security_group" "webNsg" {
 
 
 
-resource "azurerm_subnet_network_security_group_association" "example" {
+resource "azurerm_subnet_network_security_group_association" "nsg" {
   subnet_id                 = azurerm_subnet.public.id
   network_security_group_id = azurerm_network_security_group.webNsg.id
 }
 
+#LOAD BALANCER BLOCK
 
-
-resource "azurerm_lb" "example" {
+resource "azurerm_lb" "load-balancer" {
   name                = "${var.projectPrefix}-lb"
   location            = azurerm_resource_group.weight-tracker-app.location
   resource_group_name = azurerm_resource_group.weight-tracker-app.name
@@ -98,36 +100,38 @@ resource "azurerm_lb" "example" {
   }
 }
 
-resource "azurerm_lb_backend_address_pool" "example" {
-  loadbalancer_id = azurerm_lb.example.id
+resource "azurerm_lb_backend_address_pool" "pool" {
+  loadbalancer_id = azurerm_lb.load-balancer.id
   name            = "BackEndAddressPool"
 }
 
-resource "azurerm_lb_rule" "example" {
-  loadbalancer_id                = azurerm_lb.example.id
+# Configuring the load balncer inbound rule to allow outside access to the load balancer
+
+resource "azurerm_lb_rule" "http" {
+  loadbalancer_id                = azurerm_lb.load-balancer.id
   name                           = "LBRule"
   protocol                       = "Tcp"
   frontend_port                  = 8080
   backend_port                   = 8080
   frontend_ip_configuration_name = "PublicIPAddress"
-  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.example.id]
-  probe_id                       = azurerm_lb_probe.example.id
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool.id]
+  probe_id                       = azurerm_lb_probe.http.id
 }
 
 resource "azurerm_lb_rule" "ssh" {
-  loadbalancer_id                = azurerm_lb.example.id
+  loadbalancer_id                = azurerm_lb.load-balancer.id
   name                           = "sshRule"
   protocol                       = "Tcp"
   frontend_port                  = 22
   backend_port                   = 22
   frontend_ip_configuration_name = "PublicIPAddress"
-  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.example.id]
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool.id]
   probe_id                       = azurerm_lb_probe.ssh.id
 }
 
-resource "azurerm_network_interface_backend_address_pool_association" "example" {
+resource "azurerm_network_interface_backend_address_pool_association" "pool_association" {
   count                   = local.instance_count
-  backend_address_pool_id = azurerm_lb_backend_address_pool.example.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.pool.id
   ip_configuration_name   = "primary"
   network_interface_id    = element(azurerm_network_interface.webApp.*.id, count.index)
 }
