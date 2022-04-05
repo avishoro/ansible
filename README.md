@@ -28,7 +28,7 @@ pg_username:  postgres
 
 pg_password: <Your password>
 
-LB_ip: <Your public IP>
+LB_ip: {Your public IP}
 
 okta_url: <Your OKTA url like dev-*******.okta.com>
 
