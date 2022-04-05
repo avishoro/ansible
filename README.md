@@ -32,7 +32,7 @@ LB_ip: {Your public IP}
 
 okta_url: <Your OKTA url like dev-*******.okta.com>
 
-okta_client_id:  <Your client ID>
+okta_client_id:  {Your client ID}
 
 okta_client_secret: <Your client secret>
 
