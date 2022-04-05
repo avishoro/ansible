@@ -29,20 +29,6 @@ resource "azurerm_public_ip" "ip" {
   sku                 = "Standard"
 }
 
-# Manages a Network Interface.
-
-resource "azurerm_network_interface" "webApp" {
-  count               = local.instance_count
-  name                = "${var.projectPrefix}-nic${count.index}"
-  resource_group_name = azurerm_resource_group.weight-tracker-app.name
-  location            = azurerm_resource_group.weight-tracker-app.location
-
-  ip_configuration {
-    name                          = "primary"
-    subnet_id                     = azurerm_subnet.public.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
 
 
 # Manages an Availability Set for Virtual Machines.
@@ -55,7 +41,6 @@ resource "azurerm_availability_set" "avset" {
   platform_update_domain_count = 2
   managed                      = true
 }
-
 
 # Manages a network security group that contains a list of network security rules
 
@@ -74,7 +59,7 @@ resource "azurerm_network_security_group" "webNsg" {
     destination_port_range     = "8080"
     destination_address_prefix = "*"
   }
-  security_rule {
+   security_rule {
     access                     = "Allow"
     direction                  = "Inbound"
     name                       = "port22"
@@ -85,7 +70,6 @@ resource "azurerm_network_security_group" "webNsg" {
     destination_port_range     = "22"
     destination_address_prefix = "*"
   }
- 
 }
 
 # Associates a Network Security Group with a Subnet within a Virtual Network.
@@ -95,8 +79,7 @@ resource "azurerm_subnet_network_security_group_association" "nsg" {
   network_security_group_id = azurerm_network_security_group.webNsg.id
 }
 
-
-# LOAD BALANCER BLOCK
+#LOAD BALANCER BLOCK
 
 resource "azurerm_lb" "load-balancer" {
   name                = "${var.projectPrefix}-lb"
@@ -143,36 +126,29 @@ resource "azurerm_lb_rule" "ssh" {
 # Manages the association between a Network Interface and a Load Balancer's Backend Address Pool.
 
 resource "azurerm_network_interface_backend_address_pool_association" "pool_association" {
-  count                   = local.instance_count
+  count                   = var.num
   backend_address_pool_id = azurerm_lb_backend_address_pool.pool.id
   ip_configuration_name   = "primary"
-  network_interface_id    = element(azurerm_network_interface.webApp.*.id, count.index)
+  network_interface_id    = module.vms[count.index].nic_id
 }
 
-resource "azurerm_linux_virtual_machine" "webApp" {
-  count                           = local.instance_count
-  name                            = "${var.projectPrefix}-vm${count.index}"
-  resource_group_name             = azurerm_resource_group.weight-tracker-app.name
-  location                        = azurerm_resource_group.weight-tracker-app.location
-  size                            = "Standard_b1ls"
-  admin_username                  = var.admin
-  admin_password                  = var.password
-  availability_set_id             = azurerm_availability_set.avset.id
-  disable_password_authentication = false
-  network_interface_ids = [
-    azurerm_network_interface.webApp[count.index].id,
-  ]
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
+#calling to a module to build vms for running the app
 
-  os_disk {
-    storage_account_type = "Standard_LRS"
-    caching              = "ReadWrite"
-  }
+resource "azurerm_resource_group" "VMs" {
+  name     = "${var.prefix}-VMs-resources"
+  location = var.location
 }
+
+module "vms" {
+  source         = "./modules/vm"
+  count          = var.num
+  name           = "${var.prefix}-vm-${count.index}"
+  resource_group = azurerm_resource_group.VMs
+  webAppMachines_username = var.admin
+  webAppMachines_password = var.password
+  subnet_id      = azurerm_subnet.public.id
+  depends_on     = [azurerm_lb.load-balancer]
+}
+
 
