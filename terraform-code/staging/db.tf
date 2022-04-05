@@ -15,25 +15,25 @@ resource "azurerm_subnet" "private" {
   }
 }
 
-resource "azurerm_private_dns_zone" "example" {
-  name                = "example.postgres.database.azure.com"
+resource "azurerm_private_dns_zone" "dnsZone" {
+  name                = "dnsZone.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.weight-tracker-app.name
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "example" {
-  name                  = "exampleVnetZone.com"
-  private_dns_zone_name = azurerm_private_dns_zone.example.name
+resource "azurerm_private_dns_zone_virtual_network_link" "dns_zone_vn_link" {
+  name                  = "VnZone.com"
+  private_dns_zone_name = azurerm_private_dns_zone.dnsZone.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
   resource_group_name   = azurerm_resource_group.weight-tracker-app.name
 }
 
 resource "azurerm_postgresql_flexible_server" "db" {
-  name                   = "db-staging-new"
+  name                   = "db-staging"
   resource_group_name    = azurerm_resource_group.weight-tracker-app.name
   location               = azurerm_resource_group.weight-tracker-app.location
   version                = "13"
   delegated_subnet_id    = azurerm_subnet.private.id
-  private_dns_zone_id    = azurerm_private_dns_zone.example.id
+  private_dns_zone_id    = azurerm_private_dns_zone.dnsZone.id
   administrator_login    = var.admin
   administrator_password = var.password
 
@@ -44,20 +44,20 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
 }
 
-resource "azurerm_postgresql_flexible_server_database" "example" {
+resource "azurerm_postgresql_flexible_server_database" "db" {
   name      = "${var.projectPrefix}-db"
   server_id = azurerm_postgresql_flexible_server.db.id
   collation = "en_US.utf8"
   charset   = "utf8"
 }
 
-resource "azurerm_postgresql_flexible_server_configuration" "example" {
+resource "azurerm_postgresql_flexible_server_configuration" "config" {
   name      = "backslash_quote"
   server_id = azurerm_postgresql_flexible_server.db.id
   value     = "off"
 }
 
-resource "azurerm_postgresql_flexible_server_firewall_rule" "example" {
+resource "azurerm_postgresql_flexible_server_firewall_rule" "lb_rule" {
   name      = "example-fw"
   server_id = azurerm_postgresql_flexible_server.PosrgreSQLFlexibleDataServer.id
 
