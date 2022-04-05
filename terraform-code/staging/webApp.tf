@@ -6,6 +6,7 @@ resource "azurerm_subnet" "public" {
 }
 
 
+#PROBE BLOCKS REQUIRED FOR THE OPERATION OF LOAD BALNCER
 
 resource "azurerm_lb_probe" "http" {
   name                = "http-running-probe"
@@ -28,6 +29,8 @@ resource "azurerm_public_ip" "ip" {
   sku                 = "Standard"
 }
 
+# Manages a Network Interface.
+ 
 resource "azurerm_network_interface" "webApp" {
   count               = local.instance_count
   name                = "${var.projectPrefix}-nic${count.index}"
@@ -42,6 +45,7 @@ resource "azurerm_network_interface" "webApp" {
 }
 
 
+# Manages an Availability Set for Virtual Machines.
 
 resource "azurerm_availability_set" "avset" {
   name                         = "${var.projectPrefix}-avset"
@@ -51,6 +55,8 @@ resource "azurerm_availability_set" "avset" {
   platform_update_domain_count = 2
   managed                      = true
 }
+
+# Manages a network security group that contains a list of network security rules
 
 resource "azurerm_network_security_group" "webNsg" {
   name                = "webNsg"
@@ -80,7 +86,7 @@ resource "azurerm_network_security_group" "webNsg" {
   }
 }
 
-
+# Associates a Network Security Group with a Subnet within a Virtual Network.
 
 resource "azurerm_subnet_network_security_group_association" "nsg" {
   subnet_id                 = azurerm_subnet.public.id
@@ -100,12 +106,14 @@ resource "azurerm_lb" "load-balancer" {
   }
 }
 
+#CREATING BACKEND POOL's FOR THE LOAD BALANCER
+
 resource "azurerm_lb_backend_address_pool" "pool" {
   loadbalancer_id = azurerm_lb.load-balancer.id
   name            = "BackEndAddressPool"
 }
 
-# Configuring the load balncer inbound rule to allow outside access to the load balancer
+# Configuring the load balncer inbound rules to allow outside access to the load balancer
 
 resource "azurerm_lb_rule" "http" {
   loadbalancer_id                = azurerm_lb.load-balancer.id
@@ -128,6 +136,8 @@ resource "azurerm_lb_rule" "ssh" {
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool.id]
   probe_id                       = azurerm_lb_probe.ssh.id
 }
+
+# Manages the association between a Network Interface and a Load Balancer's Backend Address Pool.
 
 resource "azurerm_network_interface_backend_address_pool_association" "pool_association" {
   count                   = local.instance_count
