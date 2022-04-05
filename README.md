@@ -20,29 +20,29 @@ bootcamp-week6
  
 5. create vars.yml file with all your variables in this form:
 
-host: <your host address>
+host: {your host address}
  
-pghost: <your db name>.postgres.database.azure.com
+pghost: {your db name}.postgres.database.azure.com
 
 pg_username:  postgres
 
-pg_password: <Your password>
+pg_password: {Your password}
 
 LB_ip: {Your public IP}
 
-okta_url: <Your OKTA url like dev-*******.okta.com>
+okta_url: {Your OKTA url like dev-*******.okta.com}
 
 okta_client_id:  {Your client ID}
 
-okta_client_secret: <Your client secret>
+okta_client_secret: {Your client secret}
 
 ansible_connection: ssh 
 
 ansible_port: 22
 
-ansible_user: <your username>
+ansible_user: {your username}
 
-ansible_ssh_pass: <your password>
+ansible_ssh_pass: {your password}
 
 6. create inventory file with your VM's ip's like the inventory-example file
 
