@@ -14,7 +14,7 @@ bootcamp-week6
     }
   
   
-3. create two infrastructures, one with the staging code, and one with the production code.
+3. create two infrastructures, one with the staging code, and one with the production code, in the production enviorment, use the production-variables file in https://github.com/avishoro/ansible/tree/main/terraform-code/modules/vm, for the staging enviorment, use the staging-variables file there.
 
 4. follow all the steps in https://gitlab.com/ansible-workshop/labs/lab01 to install ansible and configure the nodes.
  
