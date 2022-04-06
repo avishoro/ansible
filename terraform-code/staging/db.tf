@@ -78,9 +78,4 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "lb_rule" {
 }
 
 
-resource "azurerm_postgresql_flexible_server_configuration" "flexible_server_configuration" {
-  name      = "require_secure_transport"
-  server_id = azurerm_postgresql_flexible_server.PosrgreSQLFlexibleDataServer.id
-  value     = "off"
 
-}
